@@ -1,5 +1,5 @@
 ---
-- name: Play that adds ssh keys to servers
+- name: Play that installs and attaches wazuh agents to wazuh manager
   hosts: all
   become: true
   pre_tasks:
