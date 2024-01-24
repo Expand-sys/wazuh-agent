@@ -44,7 +44,7 @@
                 name: wazuh-agent
                 state: present
                 update_cache: true
-                environment: 
+              environment: 
                 WAZUH_MANAGER: '{{ manager_ip }}'
             
             - name: disable repo until needed - Debian
