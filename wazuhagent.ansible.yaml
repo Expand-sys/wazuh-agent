@@ -9,7 +9,7 @@
           block:
             - name: Add Wazuh Repo - RHEL
               ansible.builtin.yum_repository:
-                name: EL-\$releasever - Wazuh
+                name: EL - Wazuh
                 state: present
                 description: wazuh open source security platform
                 gpgkey: https://packages.wazuh.com/key/GPG-KEY-WAZUH
