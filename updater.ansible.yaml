@@ -1,0 +1,28 @@
+---
+- name: Play that adds ssh keys to servers
+  hosts: all
+  become: true
+  tasks:
+    - name: enable repo - RHEL
+      ansible.builtin.shell: |
+        sed -i "s/^enabled=0/enabled=1/" /etc/yum.repos.d/wazuh.repo
+      when: ansible_os_family == "RedHat"
+    
+    - name: enable repo - DEB/Ubuntu
+      ansible.builtin.shell: |
+        sed -i "s/^#deb/deb/" /etc/apt/sources.list.d/wazuh.list
+        apt-get update
+      when: ansible_os_family == "Debian"
+
+    - name: update wazuh-agent - RHEL
+      ansible.builtin.yum:
+        name: wazuh-agent
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+    
+    - name: update wazuh-agent
+      ansible.builtin.apt:
+        name: wazuh-agent
+        state: latest
+      when: ansible_os_family == "Debian"

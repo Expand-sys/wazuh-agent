@@ -1,0 +1,108 @@
+---
+- name: Play that adds ssh keys to servers
+  hosts: all
+  become: true
+  pre_tasks:
+    - name: Load variables
+      ansible.builtin.include_vars: '{{ item }}'
+      with_first_found:
+        - "default_vars/default.yaml"
+  tasks:
+    - name: add agents
+      block:
+        - name: Repo and install RHEL
+          block:
+            - name: Add Wazuh Repo - RHEL
+              ansible.builtin.yum_repository:
+                name: EL-\$releasever - Wazuh
+                state: present
+                gpgkey: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+                baseurl: https://packages.wazuh.com/4.x/yum/
+
+            - name: Install Wazuh agent and register to manager - RHEL
+              ansible.builtin.yum:
+                name: wazuh=agent
+                state: present
+              environment: WAZUH_MANAGER="{{ MANAGERIP }}"
+            
+            - name: disable repo unless needed - RHEL
+              ansible.builtin.shell: |
+                sed -i "s/^enabled=1/enabled=0/" /etc/yum.repos.d/wazuh.repo
+          when: ansible_os_family == "RedHat"
+
+        - name: One way to avoid apt_key once it is removed from your distro
+          block:
+            - name: Wazuh |no apt key
+              ansible.builtin.get_url:
+                url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+                dest: /usr/share/keyrings/wazuh.gpg
+
+            - name: Wazuh | apt source
+              ansible.builtin.apt_repository:
+                repo: "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main"
+                state: present
+
+            - name: Wuzah install
+              ansible.builtin.apt:
+                name: wazuh-agent
+                state: present
+                update_cache: true
+              environment: WAZUH_MANAGER="{{ MANAGERIP }}"
+            
+            - name: disable repo until needed - Debian
+              ansible.builtin.shell: |
+                sed -i "s/^deb/#deb/" /etc/apt/sources.list.d/wazuh.list
+                apt-get update
+
+          when: ansible_os_family == "Debian"
+
+        - name: start and enable
+          ansible.builtin.systemd_service:
+            state: started
+            enabled: true
+            daemon_reload: true
+            name: wazuh-agent
+
+
+        
+
+      rescue:
+        - name: Add failed hosts to failed_host inventory
+          ansible.builtin.add_host:
+            name: "{{ inventory_hostname }}"
+            groups: failed_hosts
+          delegate_to: localhost
+          become: false
+
+        - name: List number of failed hosts
+          ansible.builtin.debug: # noqa: run-once[task]
+            var: "{{ groups['failed_hosts'] | length }}"
+          run_once: true
+          delegate_to: localhost
+          become: false
+
+        - name: List failed hosts - via hostgroup
+          ansible.builtin.debug: # noqa: run-once[task]
+            var: groups['failed_hosts']
+          run_once: true
+          delegate_to: localhost
+          become: false
+
+        - name: List failed hosts - direct
+          ansible.builtin.debug:
+            var: ansible_hostname
+          delegate_to: localhost
+          become: false
+
+        - name: Include debugging output sick
+          ansible.builtin.include_tasks: debug.yaml
+      
+- name: Handle failed hosts
+  hosts: failed_hosts
+  tasks:
+  - name: Display debug info for failed hosts
+    ansible.builtin.debug:
+      var: ansible_hostname
+    delegate_to: localhost
+    become: false
+
