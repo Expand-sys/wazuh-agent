@@ -7,6 +7,11 @@
       block:
         - name: Repo and install RHEL
           block:
+            - name: import gpgkey - RHEL
+              ansible.builtin.rpm_key:
+                key: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+                state: present
+            
             - name: Add Wazuh Repo - RHEL
               ansible.builtin.yum_repository:
                 name: EL-Wazuh
