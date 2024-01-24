@@ -2,11 +2,6 @@
 - name: Play that installs and attaches wazuh agents to wazuh manager
   hosts: all
   become: true
-  pre_tasks:
-    - name: Load variables
-      ansible.builtin.include_vars: '{{ item }}'
-      with_first_found:
-        - "default_vars/default.yaml"
   tasks:
     - name: add agents
       block:
