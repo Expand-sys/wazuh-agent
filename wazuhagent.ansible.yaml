@@ -19,7 +19,8 @@
               ansible.builtin.yum:
                 name: wazuh=agent
                 state: present
-              environment: WAZUH_MANAGER={{ MANAGERIP }}
+              environment: 
+                WAZUH_MANAGER: '{{ manager_ip }}'
             
             - name: disable repo unless needed - RHEL
               ansible.builtin.shell: |
@@ -43,7 +44,8 @@
                 name: wazuh-agent
                 state: present
                 update_cache: true
-              environment: WAZUH_MANAGER={{ MANAGERIP }}
+                environment: 
+                WAZUH_MANAGER: '{{ manager_ip }}'
             
             - name: disable repo until needed - Debian
               ansible.builtin.shell: |
