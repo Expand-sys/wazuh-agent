@@ -11,6 +11,7 @@
               ansible.builtin.yum_repository:
                 name: EL-\$releasever - Wazuh
                 state: present
+                description: wazuh open source security platform
                 gpgkey: https://packages.wazuh.com/key/GPG-KEY-WAZUH
                 baseurl: https://packages.wazuh.com/4.x/yum/
 
