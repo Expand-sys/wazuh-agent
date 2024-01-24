@@ -19,7 +19,7 @@
               ansible.builtin.yum:
                 name: wazuh=agent
                 state: present
-              environment: WAZUH_MANAGER="{{ MANAGERIP }}"
+              environment: WAZUH_MANAGER={{ MANAGERIP }}
             
             - name: disable repo unless needed - RHEL
               ansible.builtin.shell: |
@@ -43,7 +43,7 @@
                 name: wazuh-agent
                 state: present
                 update_cache: true
-              environment: WAZUH_MANAGER="{{ MANAGERIP }}"
+              environment: WAZUH_MANAGER={{ MANAGERIP }}
             
             - name: disable repo until needed - Debian
               ansible.builtin.shell: |
@@ -58,9 +58,6 @@
             enabled: true
             daemon_reload: true
             name: wazuh-agent
-
-
-        
 
       rescue:
         - name: Add failed hosts to failed_host inventory
@@ -89,9 +86,6 @@
             var: ansible_hostname
           delegate_to: localhost
           become: false
-
-        - name: Include debugging output sick
-          ansible.builtin.include_tasks: debug.yaml
       
 - name: Handle failed hosts
   hosts: failed_hosts
