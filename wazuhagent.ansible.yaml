@@ -29,7 +29,7 @@
             
             - name: disable repo unless needed - RHEL
               ansible.builtin.shell: |
-                sed -i "s/^enabled=1/enabled=0/" /etc/yum.repos.d/wazuh.repo
+                sed -i "s/^enabled=1/enabled=0/" /etc/yum.repos.d/EL-Wazuh.repo
           when: ansible_os_family == "RedHat"
 
         - name: One way to avoid apt_key once it is removed from your distro
