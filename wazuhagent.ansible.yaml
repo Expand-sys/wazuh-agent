@@ -42,7 +42,7 @@
 
             - name: Wazuh | apt source
               ansible.builtin.apt_repository:
-                repo: "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main"
+                repo: "deb [trusted=true] https://packages.wazuh.com/4.x/apt/ stable main"
                 state: present
 
             - name: Wuzah install
