@@ -22,7 +22,7 @@
 
             - name: Install Wazuh agent and register to manager - RHEL
               ansible.builtin.yum:
-                name: wazuh=agent
+                name: wazuh-agent
                 state: present
               environment: 
                 WAZUH_MANAGER: '{{ manager_ip }}'
@@ -38,6 +38,7 @@
               ansible.builtin.get_url:
                 url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
                 dest: /usr/share/keyrings/wazuh.gpg
+                mode: 644
 
             - name: Wazuh | apt source
               ansible.builtin.apt_repository:
